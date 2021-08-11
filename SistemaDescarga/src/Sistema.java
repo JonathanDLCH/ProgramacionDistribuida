@@ -12,9 +12,11 @@ Los brazos pueden tomar la misma o diferente cantidad de piezas.
  */
 public class Sistema {
     public static void main(String[] args) throws InterruptedException{        
-        Contenedor contenedor1 = new Contenedor(1,50);
-        Brazo brazo1 = new Brazo(0,1,contenedor1);
-        Brazo brazo2 = new Brazo(1,1,contenedor1);
+        Contenedor contenedor1 = new Contenedor(1,20);
+        Contenedor contenedor2 = new Contenedor(2,20);
+        
+        Brazo brazo1 = new Brazo(0,10,contenedor1,contenedor2);
+        Brazo brazo2 = new Brazo(1,10,contenedor1,contenedor2);
         
         Thread h1 = new Thread(brazo1);
         Thread h2 = new Thread(brazo2);

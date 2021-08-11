@@ -9,22 +9,26 @@ import java.util.logging.Logger;
 public class Brazo implements Runnable {
 
     //Atributos
-    private int idBrazo, nPiezas;
-    private Contenedor container;
+    private int idBrazo, nObjetos,nPiezasA,nPiezasB;
+    private Contenedor containerA,containerB;
     public boolean flag[] = {false, false};
-    public int turno = 0;
+    public int turno = 0,sigContenedor;
 
     //Constructor
-    public Brazo(int idBrazo, int nPiezas, Contenedor container) {
+    public Brazo(int idBrazo, int nObjetos, Contenedor containerA,Contenedor containerB){
         this.idBrazo = idBrazo;
-        this.nPiezas = nPiezas;
-        this.container = container;
+        this.nPiezasA = nObjetos;
+        this.nPiezasB = nObjetos;
+        this.nObjetos = nObjetos;
+        this.containerA = containerA;
+        this.containerB = containerB;
+        sigContenedor= idBrazo;
     }
 
     //Metodo
     @Override
     public void run() {
-        while (container.piezas > 0) {
+        while (containerA.piezas > 0 && containerB.piezas > 0) {
             int otherId = idBrazo == 0 ? 1 : 0;
             flag[idBrazo] = true; //flag[0]=true   flag[1]=true
             turno = otherId;
@@ -36,14 +40,32 @@ public class Brazo implements Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Brazo.class.getName()).log(Level.SEVERE, null, ex);
             }
-            //while(container.piezas>0){
+            if(this.nObjetos>0 && (containerA.piezas!=0 || containerB.piezas!=0)){
             //Sección crítica
-            container.descargarPiezas(this.nPiezas);
-            System.out.println("Brazo " + idBrazo + "descarga " + nPiezas + " piezas de " + (this.container.piezas + 1) + " del contenedor");
-            //}
-
+            switch(sigContenedor){
+                case 0:
+                    containerA.descargarUnaPieza();
+                    this.nPiezasA--;
+                    System.out.println("Brazo " + idBrazo + " descarga 1/"+ (this.containerA.piezas + 1) + " del contenedor A");
+                    sigContenedor= sigContenedor==0 ? 1:0;
+                    break;
+                case 1:
+                    containerB.descargarUnaPieza();
+                    this.nPiezasB--;
+                    System.out.println("Brazo " + idBrazo + " descarga 1/"+ (this.containerB.piezas + 1) + " del contenedor B");
+                    sigContenedor= sigContenedor==0 ? 1:0;
+                    break;
+                default: System.out.println("Ocurrio un error");
+            }
+            
+            }
+            if(this.nPiezasA==this.nPiezasB){
+                System.out.println("Brazo "+idBrazo+" armo 1 objeto de "+this.nObjetos);
+                this.nObjetos--;
+            }
             flag[idBrazo] = false;
         }
+        System.out.println("Se ha terminado de descargar");
     }
 
 }
